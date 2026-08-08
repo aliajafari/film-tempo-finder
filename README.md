@@ -8,6 +8,8 @@ It can be used for a single cue or to find a common tempo that works across mult
 
 Everything runs directly in the browser.
 
+Live demo: **https://aliajafari.github.io/film-tempo-finder/**
+
 ---
 
 ## ❤️ About the Project
