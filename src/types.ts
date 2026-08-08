@@ -85,6 +85,11 @@ export type TempoSearchOptions =
     step: number;
   };
 
+export type FixedTempoOptions =
+  MusicalGridOptions & {
+    bpm: number;
+  };
+
 export type TempoResult = {
   bpm: number;
 
