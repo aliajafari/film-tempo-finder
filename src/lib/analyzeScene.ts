@@ -1,7 +1,7 @@
 import type {
   HitPoint,
-  SceneTempoFit,
   SceneTempoInput,
+  SceneTimingFit,
 } from '../types';
 
 import {
@@ -21,7 +21,7 @@ export function analyzeSceneAtTempo(
   scene: SceneTempoInput,
   bpm: number,
   fps: number,
-): SceneTempoFit | null {
+): SceneTimingFit | null {
   if (
     bpm <= 0 ||
     fps <= 0 ||
@@ -46,8 +46,8 @@ export function analyzeSceneAtTempo(
    * Scene In and Scene Out are
    * structural points.
    *
-   * We prefer them on the first
-   * beat of a bar.
+   * We currently prefer them on
+   * downbeats.
    */
   const points: HitPoint[] = [
     {
@@ -80,11 +80,12 @@ export function analyzeSceneAtTempo(
   ];
 
   /*
-   * We only need to search one
-   * complete bar of phase.
+   * The grid phase repeats after
+   * one complete bar.
    *
-   * After one bar, the musical
-   * grid repeats.
+   * Searching one bar before
+   * Scene In therefore covers all
+   * unique bar-grid phases.
    */
   const searchStart =
     Math.max(
@@ -100,7 +101,6 @@ export function analyzeSceneAtTempo(
     | {
         cueStartTime: number;
         rmse: number;
-
         alignments:
           ReturnType<
             typeof calculateAlignments
@@ -108,14 +108,40 @@ export function analyzeSceneAtTempo(
       }
     | null = null;
 
+  /*
+   * Search on exact video frames.
+   *
+   * We calculate using an integer
+   * frame index instead of repeatedly
+   * adding frameDuration. This avoids
+   * accumulating floating-point drift.
+   */
+  const totalFrames =
+    Math.max(
+      0,
+      Math.round(
+        (
+          searchEnd -
+          searchStart
+        ) *
+          fps,
+      ),
+    );
+
   for (
-    let cueStart =
-      searchStart;
-    cueStart <=
-    searchEnd + 1e-9;
-    cueStart +=
-      frameDuration
+    let frameIndex = 0;
+    frameIndex <=
+    totalFrames;
+    frameIndex++
   ) {
+    const cueStart =
+      Math.min(
+        searchEnd,
+        searchStart +
+          frameIndex *
+            frameDuration,
+      );
+
     const alignments =
       calculateAlignments(
         points,
@@ -216,6 +242,7 @@ export function analyzeSceneAtTempo(
       ),
 
     sceneIn,
+
     sceneOut,
 
     hitAlignments,

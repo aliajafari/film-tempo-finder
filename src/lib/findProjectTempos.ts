@@ -11,6 +11,7 @@ import type {
   ProjectTempoSearchOptions,
   SceneTempoFit,
   SceneTempoInput,
+  SceneTimingFit,
   TempoRelationship,
 } from '../types';
 
@@ -23,84 +24,60 @@ type TempoMatch = {
   deviationPercent: number;
 };
 
-const TEMPO_RELATIONSHIPS: Array<{
+type TempoRelationshipDefinition = {
   factor: number;
 
   relationship:
     TempoRelationship;
-}> = [
-  {
-    factor: 0.25,
-    relationship:
-      'quarter-time',
-  },
+};
 
-  {
-    factor: 0.5,
-    relationship:
-      'half-time',
-  },
+const TEMPO_RELATIONSHIPS:
+  TempoRelationshipDefinition[] =
+  [
+    {
+      factor: 0.25,
 
-  {
-    factor: 1,
-    relationship:
-      'same',
-  },
+      relationship:
+        'quarter-time',
+    },
 
-  {
-    factor: 2,
-    relationship:
-      'double-time',
-  },
+    {
+      factor: 0.5,
 
-  {
-    factor: 4,
-    relationship:
-      'quadruple-time',
-  },
-];
+      relationship:
+        'half-time',
+    },
+
+    {
+      factor: 1,
+
+      relationship:
+        'same',
+    },
+
+    {
+      factor: 2,
+
+      relationship:
+        'double-time',
+    },
+
+    {
+      factor: 4,
+
+      relationship:
+        'quadruple-time',
+    },
+  ];
 
 function getTempoMatch(
   candidateBpm: number,
   preferredBpm: number,
 ): TempoMatch {
-  let best:
-    TempoMatch | null =
-    null;
-
-  for (
-    const item of
-      TEMPO_RELATIONSHIPS
+  if (
+    candidateBpm <= 0 ||
+    preferredBpm <= 0
   ) {
-    const matchedTempo =
-      preferredBpm *
-      item.factor;
-
-    const deviationPercent =
-      Math.abs(
-        candidateBpm -
-          matchedTempo,
-      ) /
-      matchedTempo *
-      100;
-
-    if (
-      !best ||
-      deviationPercent <
-        best.deviationPercent
-    ) {
-      best = {
-        matchedTempo,
-
-        relationship:
-          item.relationship,
-
-        deviationPercent,
-      };
-    }
-  }
-
-  if (!best) {
     return {
       matchedTempo:
         preferredBpm,
@@ -113,20 +90,61 @@ function getTempoMatch(
     };
   }
 
-  return best;
+  let best:
+    TempoMatch | null =
+    null;
+
+  for (
+    const definition of
+      TEMPO_RELATIONSHIPS
+  ) {
+    const matchedTempo =
+      preferredBpm *
+      definition.factor;
+
+    const deviationPercent =
+      (
+        Math.abs(
+          candidateBpm -
+            matchedTempo,
+        ) /
+        matchedTempo
+      ) *
+      100;
+
+    if (
+      !best ||
+      deviationPercent <
+        best.deviationPercent
+    ) {
+      best = {
+        matchedTempo,
+
+        relationship:
+          definition.relationship,
+
+        deviationPercent,
+      };
+    }
+  }
+
+  return (
+    best ?? {
+      matchedTempo:
+        preferredBpm,
+
+      relationship:
+        'related',
+
+      deviationPercent:
+        100,
+    }
+  );
 }
 
-function attachTempoFit(
-  scene:
-    SceneTempoInput,
-
-  fit:
-    ReturnType<
-      typeof analyzeSceneAtTempo
-    > extends infer T
-      ? NonNullable<T>
-      : never,
-
+function enrichSceneFit(
+  scene: SceneTempoInput,
+  timingFit: SceneTimingFit,
   candidateBpm: number,
 ): SceneTempoFit {
   const tempoMatch =
@@ -136,7 +154,7 @@ function attachTempoFit(
     );
 
   return {
-    ...fit,
+    ...timingFit,
 
     preferredBpm:
       scene.preferredBpm,
@@ -153,12 +171,9 @@ function attachTempoFit(
 }
 
 export function findProjectTempos(
-  scenes:
-    SceneTempoInput[],
-
+  scenes: SceneTempoInput[],
   options:
     ProjectTempoSearchOptions,
-
   limit = 3,
 ): ProjectTempoResult[] {
   if (
@@ -167,23 +182,23 @@ export function findProjectTempos(
     options.maxBpm <=
       options.minBpm ||
     options.step <= 0 ||
-    options.fps <= 0
+    options.fps <= 0 ||
+    options.tempoInfluence <
+      0
   ) {
     return [];
   }
 
-  const results:
-    ProjectTempoResult[] =
-    [];
-
-  const totalSteps =
-    Math.floor(
-      (
-        options.maxBpm -
-        options.minBpm
-      ) /
-        options.step,
-    );
+  if (
+    scenes.some(
+      scene =>
+        scene.preferredBpm <=
+          0 ||
+        scene.weight <= 0,
+    )
+  ) {
+    return [];
+  }
 
   const totalSceneWeight =
     scenes.reduce(
@@ -202,6 +217,19 @@ export function findProjectTempos(
   ) {
     return [];
   }
+
+  const results:
+    ProjectTempoResult[] =
+    [];
+
+  const totalSteps =
+    Math.floor(
+      (
+        options.maxBpm -
+        options.minBpm
+      ) /
+        options.step,
+    );
 
   for (
     let index = 0;
@@ -224,21 +252,24 @@ export function findProjectTempos(
     for (
       const scene of scenes
     ) {
-      const analysis =
+      const timingFit =
         analyzeSceneAtTempo(
           scene,
           bpm,
           options.fps,
         );
 
-      if (!analysis) {
-        continue;
+      if (!timingFit) {
+        sceneFits.length =
+          0;
+
+        break;
       }
 
       sceneFits.push(
-        attachTempoFit(
+        enrichSceneFit(
           scene,
-          analysis,
+          timingFit,
           bpm,
         ),
       );
@@ -252,49 +283,76 @@ export function findProjectTempos(
     }
 
     /*
-     * Timing score.
+     * ----------------------
+     * TIMING SCORE
+     * ----------------------
      *
-     * We normalize timing error relative
-     * to one beat at the candidate BPM.
+     * Timing RMSE in seconds is
+     * normalized against the duration
+     * of one beat.
      *
-     * This makes the value dimensionless
-     * and allows us to combine it with
-     * tempo deviation.
+     * This lets us combine it with
+     * tempo percentage deviation.
      */
+
     const beatDuration =
       60 / bpm;
 
-    const weightedTimingSquared =
-      sceneFits.reduce(
-        (
-          total,
-          fit,
-        ) => {
-          const sourceScene =
-            scenes.find(
-              scene =>
-                scene.id ===
-                fit.sceneId,
-            );
+    let weightedTimingSquared =
+      0;
 
-          const weight =
-            sourceScene?.weight ??
-            1;
+    let weightedRawTimingSquared =
+      0;
 
-          const normalizedTiming =
-            fit.rmse /
-            beatDuration;
+    let weightedTempoSquared =
+      0;
 
-          return (
-            total +
-            weight *
-              normalizedTiming **
-                2
-          );
-        },
+    let weightedTempoDeviation =
+      0;
 
-        0,
-      );
+    for (
+      const fit of sceneFits
+    ) {
+      const scene =
+        scenes.find(
+          currentScene =>
+            currentScene.id ===
+            fit.sceneId,
+        );
+
+      if (!scene) {
+        continue;
+      }
+
+      const weight =
+        scene.weight;
+
+      const normalizedTiming =
+        fit.rmse /
+        beatDuration;
+
+      weightedTimingSquared +=
+        weight *
+        normalizedTiming **
+          2;
+
+      weightedRawTimingSquared +=
+        weight *
+        fit.rmse ** 2;
+
+      const normalizedTempoDeviation =
+        fit.tempoDeviationPercent /
+        100;
+
+      weightedTempoSquared +=
+        weight *
+        normalizedTempoDeviation **
+          2;
+
+      weightedTempoDeviation +=
+        weight *
+        fit.tempoDeviationPercent;
+    }
 
     const timingNormalizedRmse =
       Math.sqrt(
@@ -302,81 +360,10 @@ export function findProjectTempos(
           totalSceneWeight,
       );
 
-    /*
-     * Raw timing RMSE is still kept
-     * separately so it can be displayed
-     * to the user in milliseconds.
-     */
-    const weightedTimingError =
-      sceneFits.reduce(
-        (
-          total,
-          fit,
-        ) => {
-          const sourceScene =
-            scenes.find(
-              scene =>
-                scene.id ===
-                fit.sceneId,
-            );
-
-          const weight =
-            sourceScene?.weight ??
-            1;
-
-          return (
-            total +
-            weight *
-              fit.rmse ** 2
-          );
-        },
-
-        0,
-      );
-
     const timingRmse =
       Math.sqrt(
-        weightedTimingError /
+        weightedRawTimingSquared /
           totalSceneWeight,
-      );
-
-    /*
-     * Tempo deviation.
-     *
-     * Convert percent to decimal:
-     *
-     * 5% -> 0.05
-     */
-    const weightedTempoSquared =
-      sceneFits.reduce(
-        (
-          total,
-          fit,
-        ) => {
-          const sourceScene =
-            scenes.find(
-              scene =>
-                scene.id ===
-                fit.sceneId,
-            );
-
-          const weight =
-            sourceScene?.weight ??
-            1;
-
-          const deviation =
-            fit.tempoDeviationPercent /
-            100;
-
-          return (
-            total +
-            weight *
-              deviation **
-                2
-          );
-        },
-
-        0,
       );
 
     const tempoNormalizedRmse =
@@ -385,42 +372,28 @@ export function findProjectTempos(
           totalSceneWeight,
       );
 
-    const weightedAverageTempoDeviation =
-      sceneFits.reduce(
-        (
-          total,
-          fit,
-        ) => {
-          const sourceScene =
-            scenes.find(
-              scene =>
-                scene.id ===
-                fit.sceneId,
-            );
-
-          const weight =
-            sourceScene?.weight ??
-            1;
-
-          return (
-            total +
-            weight *
-              fit.tempoDeviationPercent
-          );
-        },
-
-        0,
-      ) /
+    const tempoDeviationPercent =
+      weightedTempoDeviation /
       totalSceneWeight;
 
     /*
-     * Final project score.
+     * ----------------------
+     * PROJECT SCORE
+     * ----------------------
      *
-     * Lower is better.
+     * Timing and tempo deviation are
+     * normalized dimensionless values.
      *
-     * Timing and tempo preference are
-     * both dimensionless here.
+     * tempoInfluence = 0:
+     * timing only.
+     *
+     * tempoInfluence = 1:
+     * balanced.
+     *
+     * tempoInfluence > 1:
+     * increasingly favors scene tempos.
      */
+
     const score =
       Math.sqrt(
         timingNormalizedRmse **
@@ -449,8 +422,7 @@ export function findProjectTempos(
 
       maxError,
 
-      tempoDeviationPercent:
-        weightedAverageTempoDeviation,
+      tempoDeviationPercent,
 
       quality:
         getTempoQuality(
@@ -465,32 +437,42 @@ export function findProjectTempos(
   return results
     .sort(
       (
-        a,
-        b,
+        first,
+        second,
       ) => {
         if (
-          a.score !==
-          b.score
+          first.score !==
+          second.score
         ) {
           return (
-            a.score -
-            b.score
+            first.score -
+            second.score
           );
         }
 
         if (
-          a.tempoDeviationPercent !==
-          b.tempoDeviationPercent
+          first.tempoDeviationPercent !==
+          second.tempoDeviationPercent
         ) {
           return (
-            a.tempoDeviationPercent -
-            b.tempoDeviationPercent
+            first.tempoDeviationPercent -
+            second.tempoDeviationPercent
+          );
+        }
+
+        if (
+          first.timingRmse !==
+          second.timingRmse
+        ) {
+          return (
+            first.timingRmse -
+            second.timingRmse
           );
         }
 
         return (
-          a.timingRmse -
-          b.timingRmse
+          first.bpm -
+          second.bpm
         );
       },
     )
