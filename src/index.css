@@ -43,6 +43,7 @@ select {
   padding: 0 12px;
 
   border: 1px solid #333;
+
   border-radius: 8px;
 
   background: #1b1b1b;
@@ -118,7 +119,7 @@ section > p {
   line-height: 1.55;
 }
 
-/* Mode */
+/* Modes */
 
 .mode-tabs {
   display: grid;
@@ -149,7 +150,9 @@ section > p {
 
   text-align: left;
 
-  border: 1px solid #2d2d2d;
+  border:
+    1px solid #2d2d2d;
+
   border-radius: 12px;
 
   background: #151515;
@@ -202,7 +205,17 @@ section > p {
 
   gap: 14px;
 
-  max-width: 850px;
+  max-width: 900px;
+}
+
+.project-settings-grid--wide {
+  grid-template-columns:
+    repeat(
+      5,
+      minmax(0, 1fr)
+    );
+
+  max-width: none;
 }
 
 label {
@@ -243,7 +256,7 @@ label {
   line-height: 1.4;
 }
 
-/* Section headers */
+/* Headers */
 
 .section-header,
 .results-heading {
@@ -280,7 +293,8 @@ label {
 .empty-state {
   padding: 28px;
 
-  border: 1px dashed #333;
+  border:
+    1px dashed #333;
 
   border-radius: 12px;
 
@@ -303,7 +317,7 @@ label {
   font-size: 13px;
 }
 
-/* Scene */
+/* Scenes */
 
 .scene-list {
   display: flex;
@@ -316,7 +330,8 @@ label {
 .scene-card {
   padding: 22px;
 
-  border: 1px solid #292929;
+  border:
+    1px solid #292929;
 
   border-radius: 14px;
 
@@ -357,9 +372,11 @@ label {
 .scene-name-input {
   width: 260px;
 
-  border-color: transparent;
+  border-color:
+    transparent;
 
-  background: transparent;
+  background:
+    transparent;
 
   font-size: 18px;
 
@@ -388,6 +405,14 @@ label {
   align-items: start;
 }
 
+.scene-settings-grid--with-tempo {
+  grid-template-columns:
+    repeat(
+      6,
+      minmax(0, 1fr)
+    );
+}
+
 /* Timecode */
 
 .timecode-field {
@@ -409,7 +434,8 @@ label {
   font-variant-numeric:
     tabular-nums;
 
-  letter-spacing: 0.04em;
+  letter-spacing:
+    0.04em;
 }
 
 .timecode-input--invalid {
@@ -438,7 +464,8 @@ label {
 
   padding-top: 20px;
 
-  border-top: 1px solid #292929;
+  border-top:
+    1px solid #292929;
 }
 
 .scene-hits-header h3 {
@@ -490,7 +517,190 @@ label {
   color: #aaa;
 }
 
-/* Project Results */
+/* Find Tempo Tables */
+
+.input-table-wrapper,
+.results-table-wrapper {
+  width: 100%;
+
+  overflow-x: auto;
+
+  border:
+    1px solid #292929;
+
+  border-radius: 12px;
+}
+
+.input-table {
+  width: 100%;
+
+  min-width: 820px;
+
+  border-collapse:
+    collapse;
+
+  background: #151515;
+}
+
+.input-table th,
+.input-table td {
+  padding: 9px 10px;
+
+  border-right:
+    1px solid #292929;
+
+  border-bottom:
+    1px solid #292929;
+}
+
+.input-table th:last-child,
+.input-table td:last-child {
+  border-right: 0;
+}
+
+.input-table thead th {
+  background: #1c1c1c;
+
+  color: #999;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  text-align: left;
+
+  white-space: nowrap;
+}
+
+.input-table tbody
+  tr:last-child td {
+  border-bottom: 0;
+}
+
+.input-table td:first-child {
+  width: 44px;
+
+  color: #777;
+
+  text-align: center;
+}
+
+.input-table td:nth-child(2) {
+  width: 230px;
+}
+
+.input-table td:nth-child(3) {
+  min-width: 200px;
+}
+
+.input-table td:nth-child(4) {
+  width: 150px;
+}
+
+.input-table td:last-child {
+  width: 100px;
+}
+
+.results-table {
+  width: 100%;
+
+  min-width: 1120px;
+
+  border-collapse:
+    collapse;
+
+  background: #151515;
+}
+
+.results-table th,
+.results-table td {
+  padding: 11px 12px;
+
+  border-right:
+    1px solid #292929;
+
+  border-bottom:
+    1px solid #292929;
+
+  text-align: center;
+
+  white-space: nowrap;
+}
+
+.results-table th:last-child,
+.results-table td:last-child {
+  border-right: 0;
+}
+
+.results-table thead th {
+  background: #1c1c1c;
+
+  color: #aaa;
+
+  font-size: 13px;
+
+  font-weight: 600;
+}
+
+.results-table thead
+  tr:first-child th {
+  padding-top: 14px;
+
+  padding-bottom: 14px;
+
+  color: #eee;
+
+  font-size: 14px;
+}
+
+.results-table tbody td {
+  color: #aaa;
+
+  font-size: 14px;
+}
+
+.results-table tbody tr:hover {
+  background: #191919;
+}
+
+.results-table tfoot th,
+.results-table tfoot td {
+  border-bottom: 0;
+
+  background: #1c1c1c;
+}
+
+.results-table tfoot th {
+  text-align: left;
+
+  color: #aaa;
+}
+
+.tempo-summary {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 5px;
+}
+
+.tempo-summary strong {
+  color: #fff;
+
+  font-size: 17px;
+}
+
+.tempo-summary span {
+  color: #888;
+
+  font-size: 13px;
+}
+
+/* Project results */
 
 .project-results {
   display: flex;
@@ -503,7 +713,8 @@ label {
 .tempo-result-card {
   overflow: hidden;
 
-  border: 1px solid #292929;
+  border:
+    1px solid #292929;
 
   border-radius: 14px;
 
@@ -523,7 +734,8 @@ label {
   padding: 20px;
 }
 
-.tempo-result-main > div:first-child {
+.tempo-result-main
+  > div:first-child {
   display: flex;
 
   align-items: center;
@@ -544,15 +756,21 @@ label {
 .result-metrics {
   display: flex;
 
+  flex-wrap: wrap;
+
+  justify-content:
+    flex-end;
+
   gap: 10px;
 }
 
 .result-metrics > div {
-  min-width: 130px;
+  min-width: 120px;
 
   padding: 10px 12px;
 
-  border: 1px solid #292929;
+  border:
+    1px solid #292929;
 
   border-radius: 8px;
 
@@ -573,29 +791,35 @@ label {
   font-size: 13px;
 }
 
-/* Result table */
-
 .tempo-scenes-table-wrapper {
   overflow-x: auto;
 
-  border-top: 1px solid #292929;
+  border-top:
+    1px solid #292929;
 }
 
 .tempo-scenes-table {
   width: 100%;
 
-  min-width: 850px;
+  min-width: 900px;
 
-  border-collapse: collapse;
+  border-collapse:
+    collapse;
+}
+
+.tempo-scenes-table--extended {
+  min-width: 1320px;
 }
 
 .tempo-scenes-table th,
 .tempo-scenes-table td {
   padding: 11px 12px;
 
-  border-right: 1px solid #292929;
+  border-right:
+    1px solid #292929;
 
-  border-bottom: 1px solid #292929;
+  border-bottom:
+    1px solid #292929;
 
   text-align: left;
 
@@ -625,7 +849,8 @@ label {
   background: #191919;
 }
 
-.tempo-scenes-table tbody
+.tempo-scenes-table
+  tbody
   tr:last-child
   td {
   border-bottom: 0;
@@ -674,11 +899,12 @@ label {
 
   width: max-content;
 
-  max-width: 250px;
+  max-width: 280px;
 
   padding: 7px 10px;
 
-  border: 1px solid #444;
+  border:
+    1px solid #444;
 
   border-radius: 7px;
 
@@ -721,7 +947,8 @@ label {
 
   padding-top: 48px;
 
-  border-top: 1px solid #292929;
+  border-top:
+    1px solid #292929;
 }
 
 .help-header {
@@ -755,7 +982,8 @@ label {
 
   padding: 20px;
 
-  border: 1px solid #292929;
+  border:
+    1px solid #292929;
 
   border-radius: 12px;
 
@@ -790,22 +1018,20 @@ label {
   line-height: 1.6;
 }
 
-/* Placeholder */
-
-.coming-soon {
-  padding: 24px;
-
-  border: 1px dashed #333;
-
-  border-radius: 12px;
-}
-
 /* Responsive */
 
 @media (
-  max-width: 1050px
+  max-width: 1150px
 ) {
-  .scene-settings-grid {
+  .scene-settings-grid--with-tempo {
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(0, 1fr)
+      );
+  }
+
+  .project-settings-grid--wide {
     grid-template-columns:
       repeat(
         3,
@@ -817,7 +1043,13 @@ label {
     align-items:
       flex-start;
 
-    flex-direction: column;
+    flex-direction:
+      column;
+  }
+
+  .result-metrics {
+    justify-content:
+      flex-start;
   }
 }
 
@@ -825,7 +1057,9 @@ label {
   max-width: 850px
 ) {
   .project-settings-grid,
-  .scene-settings-grid {
+  .project-settings-grid--wide,
+  .scene-settings-grid,
+  .scene-settings-grid--with-tempo {
     grid-template-columns:
       repeat(
         2,
@@ -835,8 +1069,6 @@ label {
 
   .result-metrics {
     width: 100%;
-
-    flex-wrap: wrap;
   }
 
   .result-metrics > div {
@@ -918,7 +1150,9 @@ label {
   max-width: 520px
 ) {
   .project-settings-grid,
-  .scene-settings-grid {
+  .project-settings-grid--wide,
+  .scene-settings-grid,
+  .scene-settings-grid--with-tempo {
     grid-template-columns:
       1fr;
   }
@@ -930,185 +1164,5 @@ label {
 
   .result-metrics > div {
     width: 100%;
-  }
-}
-
-/* Find Tempo - Input table */
-
-.input-table-wrapper,
-.results-table-wrapper {
-  width: 100%;
-
-  overflow-x: auto;
-
-  border: 1px solid #292929;
-  border-radius: 12px;
-}
-
-.input-table {
-  width: 100%;
-
-  min-width: 820px;
-
-  border-collapse: collapse;
-
-  background: #151515;
-}
-
-.input-table th,
-.input-table td {
-  padding: 9px 10px;
-
-  border-right: 1px solid #292929;
-  border-bottom: 1px solid #292929;
-}
-
-.input-table th:last-child,
-.input-table td:last-child {
-  border-right: 0;
-}
-
-.input-table thead th {
-  background: #1c1c1c;
-
-  color: #999;
-
-  font-size: 13px;
-  font-weight: 600;
-
-  text-align: left;
-
-  white-space: nowrap;
-}
-
-.input-table tbody tr:last-child td {
-  border-bottom: 0;
-}
-
-.input-table td:first-child {
-  width: 44px;
-
-  color: #777;
-
-  text-align: center;
-}
-
-.input-table td:nth-child(2) {
-  width: 230px;
-}
-
-.input-table td:nth-child(3) {
-  min-width: 200px;
-}
-
-.input-table td:nth-child(4) {
-  width: 150px;
-}
-
-.input-table td:last-child {
-  width: 100px;
-}
-
-/* Find Tempo - Results */
-
-.results-table {
-  width: 100%;
-
-  min-width: 1120px;
-
-  border-collapse: collapse;
-
-  background: #151515;
-}
-
-.results-table th,
-.results-table td {
-  padding: 11px 12px;
-
-  border-right: 1px solid #292929;
-  border-bottom: 1px solid #292929;
-
-  text-align: center;
-
-  white-space: nowrap;
-}
-
-.results-table th:last-child,
-.results-table td:last-child {
-  border-right: 0;
-}
-
-.results-table thead th {
-  background: #1c1c1c;
-
-  color: #aaa;
-
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.results-table thead
-  tr:first-child
-  th {
-  padding-top: 14px;
-  padding-bottom: 14px;
-
-  color: #eee;
-
-  font-size: 14px;
-}
-
-.results-table tbody td {
-  color: #aaa;
-
-  font-size: 14px;
-}
-
-.results-table tbody tr:hover {
-  background: #191919;
-}
-
-.results-table tfoot th,
-.results-table tfoot td {
-  border-bottom: 0;
-
-  background: #1c1c1c;
-}
-
-.results-table tfoot th {
-  text-align: left;
-
-  color: #aaa;
-}
-
-.tempo-summary {
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-  justify-content: center;
-
-  gap: 5px;
-}
-
-.tempo-summary strong {
-  color: #fff;
-
-  font-size: 17px;
-}
-
-.tempo-summary span {
-  color: #888;
-
-  font-size: 13px;
-}
-
-@media (
-  max-width: 760px
-) {
-  .input-table,
-  .results-table {
-    min-width: 820px;
   }
 }

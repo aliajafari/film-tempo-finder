@@ -31,51 +31,73 @@ import type {
   SceneWeight,
   Subdivision,
   TempoQuality,
+  TempoRelationship,
   TempoResult,
 } from './types';
 
 type TooltipProps = {
-  children: ReactNode;
+  children:
+    ReactNode;
 
-  text: string;
+  text:
+    string;
 };
 
 type CueHitInput = {
-  id: string;
+  id:
+    string;
 
-  timecode: string;
+  timecode:
+    string;
 
-  snap: HitSnap;
+  snap:
+    HitSnap;
 
-  weight: HitWeight;
+  weight:
+    HitWeight;
 };
 
 type SceneHitInput = {
-  id: string;
+  id:
+    string;
 
-  timecode: string;
+  timecode:
+    string;
 
-  snap: HitSnap;
+  snap:
+    HitSnap;
 
-  weight: HitWeight;
+  weight:
+    HitWeight;
 };
 
 type SceneInput = {
-  id: string;
+  id:
+    string;
 
-  name: string;
+  name:
+    string;
 
-  inTimecode: string;
+  inTimecode:
+    string;
 
-  outTimecode: string;
+  outTimecode:
+    string;
 
-  weight: SceneWeight;
+  preferredBpm:
+    number;
 
-  beatsPerBar: number;
+  weight:
+    SceneWeight;
 
-  subdivision: Subdivision;
+  beatsPerBar:
+    number;
 
-  hitPoints: SceneHitInput[];
+  subdivision:
+    Subdivision;
+
+  hitPoints:
+    SceneHitInput[];
 };
 
 function Tooltip({
@@ -94,7 +116,8 @@ function Tooltip({
 }
 
 function createScene(
-  index: number,
+  index:
+    number,
 ): SceneInput {
   return {
     id:
@@ -103,30 +126,43 @@ function createScene(
     name:
       `Scene ${index}`,
 
-    inTimecode: '',
+    inTimecode:
+      '',
 
-    outTimecode: '',
+    outTimecode:
+      '',
 
-    weight: 1,
+    preferredBpm:
+      120,
 
-    beatsPerBar: 4,
+    weight:
+      1,
 
-    subdivision: 1,
+    beatsPerBar:
+      4,
 
-    hitPoints: [],
+    subdivision:
+      1,
+
+    hitPoints:
+      [],
   };
 }
 
-function createCueHit(): CueHitInput {
+function createCueHit():
+  CueHitInput {
   return {
     id:
       crypto.randomUUID(),
 
-    timecode: '',
+    timecode:
+      '',
 
-    snap: 'any',
+    snap:
+      'any',
 
-    weight: 1,
+    weight:
+      1,
   };
 }
 
@@ -134,18 +170,20 @@ function App() {
   const [
     mode,
     setMode,
-  ] = useState<AppMode>(
-    'find-tempo',
-  );
+  ] =
+    useState<AppMode>(
+      'find-tempo',
+    );
 
   /*
-   * Shared FPS
+   * Shared
    */
 
   const [
     fps,
     setFps,
-  ] = useState(24);
+  ] =
+    useState(24);
 
   /*
    * Find Tempo
@@ -154,37 +192,44 @@ function App() {
   const [
     cueStartTimecode,
     setCueStartTimecode,
-  ] = useState('');
+  ] =
+    useState('');
 
   const [
     cueMinBpm,
     setCueMinBpm,
-  ] = useState(60);
+  ] =
+    useState(60);
 
   const [
     cueMaxBpm,
     setCueMaxBpm,
-  ] = useState(180);
+  ] =
+    useState(180);
 
   const [
     cueStep,
     setCueStep,
-  ] = useState(0.1);
+  ] =
+    useState(0.1);
 
   const [
     cueBeatsPerBar,
     setCueBeatsPerBar,
-  ] = useState(4);
+  ] =
+    useState(4);
 
   const [
     cueStartBar,
     setCueStartBar,
-  ] = useState(1);
+  ] =
+    useState(1);
 
   const [
     cueStartBeat,
     setCueStartBeat,
-  ] = useState(1);
+  ] =
+    useState(1);
 
   const [
     cueSubdivision,
@@ -197,9 +242,10 @@ function App() {
   const [
     cueHits,
     setCueHits,
-  ] = useState<
-    CueHitInput[]
-  >([]);
+  ] =
+    useState<
+      CueHitInput[]
+    >([]);
 
   /*
    * Project Tempo
@@ -208,32 +254,43 @@ function App() {
   const [
     projectMinBpm,
     setProjectMinBpm,
-  ] = useState(60);
+  ] =
+    useState(60);
 
   const [
     projectMaxBpm,
     setProjectMaxBpm,
-  ] = useState(180);
+  ] =
+    useState(180);
 
   const [
     projectStep,
     setProjectStep,
-  ] = useState(0.1);
+  ] =
+    useState(0.1);
+
+  const [
+    tempoInfluence,
+    setTempoInfluence,
+  ] =
+    useState(1);
 
   const [
     scenes,
     setScenes,
-  ] = useState<
-    SceneInput[]
-  >([]);
+  ] =
+    useState<
+      SceneInput[]
+    >([]);
 
   /*
-   * Find Tempo helpers
+   * Find Tempo
    */
 
   const updateCueStartTimecode =
     (
-      value: string,
+      value:
+        string,
     ) => {
       setCueStartTimecode(
         formatTimecodeInput(
@@ -262,44 +319,49 @@ function App() {
       setCueHits(
         current => [
           ...current,
+
           createCueHit(),
         ],
       );
     };
 
-  const removeCueHit = (
-    hitId: string,
-  ) => {
-    setCueHits(
-      current =>
-        current.filter(
-          hit =>
-            hit.id !==
-            hitId,
-        ),
-    );
-  };
+  const removeCueHit =
+    (
+      hitId:
+        string,
+    ) => {
+      setCueHits(
+        current =>
+          current.filter(
+            hit =>
+              hit.id !==
+              hitId,
+          ),
+      );
+    };
 
-  const updateCueHit = (
-    hitId: string,
+  const updateCueHit =
+    (
+      hitId:
+        string,
 
-    patch:
-      Partial<CueHitInput>,
-  ) => {
-    setCueHits(
-      current =>
-        current.map(
-          hit =>
-            hit.id ===
-            hitId
-              ? {
-                  ...hit,
-                  ...patch,
-                }
-              : hit,
-        ),
-    );
-  };
+      patch:
+        Partial<CueHitInput>,
+    ) => {
+      setCueHits(
+        current =>
+          current.map(
+            hit =>
+              hit.id ===
+              hitId
+                ? {
+                    ...hit,
+                    ...patch,
+                  }
+                : hit,
+          ),
+      );
+    };
 
   const cueStartValid =
     isValidTimecode(
@@ -323,147 +385,157 @@ function App() {
     );
 
   const findTempoHasHitBeforeStart =
-    useMemo(() => {
-      if (
-        !cueStartValid
-      ) {
-        return false;
-      }
+    useMemo(
+      () => {
+        if (
+          !cueStartValid
+        ) {
+          return false;
+        }
 
-      const cueStart =
-        timecodeToSeconds(
-          cueStartTimecode,
-          fps,
-        );
-
-      return cueHits.some(
-        hit => {
-          if (
-            !isValidTimecode(
-              hit.timecode,
-              fps,
-            )
-          ) {
-            return false;
-          }
-
-          return (
-            timecodeToSeconds(
-              hit.timecode,
-              fps,
-            ) <
-            cueStart
-          );
-        },
-      );
-    }, [
-      cueHits,
-      cueStartTimecode,
-      cueStartValid,
-      fps,
-    ]);
-
-  const findTempoResults =
-    useMemo(() => {
-      if (
-        mode !==
-          'find-tempo' ||
-        !cueStartValid ||
-        cueHits.length < 2 ||
-        findTempoHasErrors ||
-        findTempoHasHitBeforeStart ||
-        cueMinBpm <= 0 ||
-        cueMaxBpm <=
-          cueMinBpm ||
-        cueStep <= 0 ||
-        cueBeatsPerBar <= 0 ||
-        cueStartBar <= 0 ||
-        cueStartBeat <= 0 ||
-        cueStartBeat >
-          cueBeatsPerBar
-      ) {
-        return [];
-      }
-
-      try {
-        const cueStartTime =
+        const cueStart =
           timecodeToSeconds(
             cueStartTimecode,
             fps,
           );
 
-        const hitPoints =
-          cueHits.map(
-            hit => ({
-              id:
-                hit.id,
+        return cueHits.some(
+          hit => {
+            if (
+              !isValidTimecode(
+                hit.timecode,
+                fps,
+              )
+            ) {
+              return false;
+            }
 
-              time:
-                timecodeToSeconds(
-                  hit.timecode,
-                  fps,
-                ),
-
-              snap:
-                hit.snap,
-
-              weight:
-                hit.weight,
-            }),
-          );
-
-        return findBestTempos(
-          hitPoints,
-
-          {
-            cueStartTime,
-
-            minBpm:
-              cueMinBpm,
-
-            maxBpm:
-              cueMaxBpm,
-
-            step:
-              cueStep,
-
-            beatsPerBar:
-              cueBeatsPerBar,
-
-            startBar:
-              cueStartBar,
-
-            startBeat:
-              cueStartBeat,
-
-            subdivision:
-              cueSubdivision,
+            return (
+              timecodeToSeconds(
+                hit.timecode,
+                fps,
+              ) <
+              cueStart
+            );
           },
-
-          3,
         );
-      } catch {
-        return [];
-      }
-    }, [
-      mode,
-      cueHits,
-      cueStartValid,
-      cueStartTimecode,
-      fps,
-      findTempoHasErrors,
-      findTempoHasHitBeforeStart,
-      cueMinBpm,
-      cueMaxBpm,
-      cueStep,
-      cueBeatsPerBar,
-      cueStartBar,
-      cueStartBeat,
-      cueSubdivision,
-    ]);
+      },
+      [
+        cueHits,
+        cueStartTimecode,
+        cueStartValid,
+        fps,
+      ],
+    );
+
+  const findTempoResults =
+    useMemo(
+      () => {
+        if (
+          mode !==
+            'find-tempo' ||
+          !cueStartValid ||
+          cueHits.length <
+            2 ||
+          findTempoHasErrors ||
+          findTempoHasHitBeforeStart ||
+          cueMinBpm <= 0 ||
+          cueMaxBpm <=
+            cueMinBpm ||
+          cueStep <= 0 ||
+          cueBeatsPerBar <=
+            0 ||
+          cueStartBar <=
+            0 ||
+          cueStartBeat <=
+            0 ||
+          cueStartBeat >
+            cueBeatsPerBar
+        ) {
+          return [];
+        }
+
+        try {
+          const cueStartTime =
+            timecodeToSeconds(
+              cueStartTimecode,
+              fps,
+            );
+
+          const hitPoints =
+            cueHits.map(
+              hit => ({
+                id:
+                  hit.id,
+
+                time:
+                  timecodeToSeconds(
+                    hit.timecode,
+                    fps,
+                  ),
+
+                snap:
+                  hit.snap,
+
+                weight:
+                  hit.weight,
+              }),
+            );
+
+          return findBestTempos(
+            hitPoints,
+
+            {
+              cueStartTime,
+
+              minBpm:
+                cueMinBpm,
+
+              maxBpm:
+                cueMaxBpm,
+
+              step:
+                cueStep,
+
+              beatsPerBar:
+                cueBeatsPerBar,
+
+              startBar:
+                cueStartBar,
+
+              startBeat:
+                cueStartBeat,
+
+              subdivision:
+                cueSubdivision,
+            },
+
+            3,
+          );
+        } catch {
+          return [];
+        }
+      },
+      [
+        mode,
+        cueHits,
+        cueStartValid,
+        cueStartTimecode,
+        fps,
+        findTempoHasErrors,
+        findTempoHasHitBeforeStart,
+        cueMinBpm,
+        cueMaxBpm,
+        cueStep,
+        cueBeatsPerBar,
+        cueStartBar,
+        cueStartBeat,
+        cueSubdivision,
+      ],
+    );
 
   /*
-   * Project helpers
+   * Project Tempo
    */
 
   const addScene =
@@ -480,25 +552,30 @@ function App() {
       );
     };
 
-  const removeScene = (
-    sceneId: string,
-  ) => {
-    setScenes(
-      current =>
-        current.filter(
-          scene =>
-            scene.id !==
-            sceneId,
-        ),
-    );
-  };
+  const removeScene =
+    (
+      sceneId:
+        string,
+    ) => {
+      setScenes(
+        current =>
+          current.filter(
+            scene =>
+              scene.id !==
+              sceneId,
+          ),
+      );
+    };
 
   const updateScene = <
-    K extends keyof SceneInput,
+    K extends
+      keyof SceneInput,
   >(
-    sceneId: string,
+    sceneId:
+      string,
 
-    key: K,
+    key:
+      K,
 
     value:
       SceneInput[K],
@@ -522,13 +599,15 @@ function App() {
 
   const updateSceneTimecode =
     (
-      sceneId: string,
+      sceneId:
+        string,
 
       field:
         | 'inTimecode'
         | 'outTimecode',
 
-      value: string,
+      value:
+        string,
     ) => {
       updateScene(
         sceneId,
@@ -543,7 +622,8 @@ function App() {
 
   const normalizeSceneTimecode =
     (
-      sceneId: string,
+      sceneId:
+        string,
 
       field:
         | 'inTimecode'
@@ -580,107 +660,116 @@ function App() {
       );
     };
 
-  const addSceneHit = (
-    sceneId: string,
-  ) => {
-    setScenes(
-      current =>
-        current.map(
-          scene =>
-            scene.id ===
-            sceneId
-              ? {
-                  ...scene,
+  const addSceneHit =
+    (
+      sceneId:
+        string,
+    ) => {
+      setScenes(
+        current =>
+          current.map(
+            scene =>
+              scene.id ===
+              sceneId
+                ? {
+                    ...scene,
 
-                  hitPoints: [
-                    ...scene.hitPoints,
+                    hitPoints: [
+                      ...scene.hitPoints,
 
-                    {
-                      id:
-                        crypto.randomUUID(),
+                      {
+                        id:
+                          crypto.randomUUID(),
 
-                      timecode:
-                        '',
+                        timecode:
+                          '',
 
-                      snap:
-                        'any',
+                        snap:
+                          'any',
 
-                      weight:
-                        1,
-                    },
-                  ],
-                }
-              : scene,
-        ),
-    );
-  };
+                        weight:
+                          1,
+                      },
+                    ],
+                  }
+                : scene,
+          ),
+      );
+    };
 
-  const updateSceneHit = (
-    sceneId: string,
+  const updateSceneHit =
+    (
+      sceneId:
+        string,
 
-    hitId: string,
+      hitId:
+        string,
 
-    patch:
-      Partial<SceneHitInput>,
-  ) => {
-    setScenes(
-      current =>
-        current.map(
-          scene =>
-            scene.id ===
-            sceneId
-              ? {
-                  ...scene,
+      patch:
+        Partial<SceneHitInput>,
+    ) => {
+      setScenes(
+        current =>
+          current.map(
+            scene =>
+              scene.id ===
+              sceneId
+                ? {
+                    ...scene,
 
-                  hitPoints:
-                    scene.hitPoints.map(
-                      hit =>
-                        hit.id ===
-                        hitId
-                          ? {
-                              ...hit,
+                    hitPoints:
+                      scene.hitPoints.map(
+                        hit =>
+                          hit.id ===
+                          hitId
+                            ? {
+                                ...hit,
+                                ...patch,
+                              }
+                            : hit,
+                      ),
+                  }
+                : scene,
+          ),
+      );
+    };
 
-                              ...patch,
-                            }
-                          : hit,
-                    ),
-                }
-              : scene,
-        ),
-    );
-  };
+  const removeSceneHit =
+    (
+      sceneId:
+        string,
 
-  const removeSceneHit = (
-    sceneId: string,
+      hitId:
+        string,
+    ) => {
+      setScenes(
+        current =>
+          current.map(
+            scene =>
+              scene.id ===
+              sceneId
+                ? {
+                    ...scene,
 
-    hitId: string,
-  ) => {
-    setScenes(
-      current =>
-        current.map(
-          scene =>
-            scene.id ===
-            sceneId
-              ? {
-                  ...scene,
-
-                  hitPoints:
-                    scene.hitPoints.filter(
-                      hit =>
-                        hit.id !==
-                        hitId,
-                    ),
-                }
-              : scene,
-        ),
-    );
-  };
+                    hitPoints:
+                      scene.hitPoints.filter(
+                        hit =>
+                          hit.id !==
+                          hitId,
+                      ),
+                  }
+                : scene,
+          ),
+      );
+    };
 
   const hasIncompleteScenes =
     useMemo(
       () =>
         scenes.some(
           scene =>
+            scene.preferredBpm <=
+              0 ||
             !isValidTimecode(
               scene.inTimecode,
               fps,
@@ -704,14 +793,13 @@ function App() {
                 Boolean(
                   getHitRangeError(
                     scene,
-
                     hit.timecode,
-
                     fps,
                   ),
                 ),
             ),
         ),
+
       [
         scenes,
         fps,
@@ -719,107 +807,121 @@ function App() {
     );
 
   const projectResults =
-    useMemo(() => {
-      if (
-        mode !==
-          'project-tempo' ||
-        scenes.length === 0 ||
-        hasIncompleteScenes ||
-        projectMinBpm <= 0 ||
-        projectMaxBpm <=
-          projectMinBpm ||
-        projectStep <= 0
-      ) {
-        return [];
-      }
+    useMemo(
+      () => {
+        if (
+          mode !==
+            'project-tempo' ||
+          scenes.length ===
+            0 ||
+          hasIncompleteScenes ||
+          projectMinBpm <=
+            0 ||
+          projectMaxBpm <=
+            projectMinBpm ||
+          projectStep <=
+            0 ||
+          tempoInfluence <
+            0
+        ) {
+          return [];
+        }
 
-      try {
-        const parsedScenes =
-          scenes.map(
-            scene => {
-              const startTime =
-                timecodeToSeconds(
-                  scene.inTimecode,
-                  fps,
-                );
+        try {
+          const parsedScenes =
+            scenes.map(
+              scene => {
+                const startTime =
+                  timecodeToSeconds(
+                    scene.inTimecode,
+                    fps,
+                  );
 
-              const endTime =
-                timecodeToSeconds(
-                  scene.outTimecode,
-                  fps,
-                );
+                const endTime =
+                  timecodeToSeconds(
+                    scene.outTimecode,
+                    fps,
+                  );
 
-              return {
-                id:
-                  scene.id,
+                return {
+                  id:
+                    scene.id,
 
-                startTime,
+                  startTime,
 
-                endTime,
+                  endTime,
 
-                weight:
-                  scene.weight,
+                  preferredBpm:
+                    scene.preferredBpm,
 
-                beatsPerBar:
-                  scene.beatsPerBar,
+                  weight:
+                    scene.weight,
 
-                subdivision:
-                  scene.subdivision,
+                  beatsPerBar:
+                    scene.beatsPerBar,
 
-                hitPoints:
-                  scene.hitPoints.map(
-                    hit => ({
-                      id:
-                        hit.id,
+                  subdivision:
+                    scene.subdivision,
 
-                      time:
-                        timecodeToSeconds(
-                          hit.timecode,
+                  hitPoints:
+                    scene.hitPoints.map(
+                      hit => ({
+                        id:
+                          hit.id,
 
-                          fps,
-                        ),
+                        time:
+                          timecodeToSeconds(
+                            hit.timecode,
+                            fps,
+                          ),
 
-                      snap:
-                        hit.snap,
+                        snap:
+                          hit.snap,
 
-                      weight:
-                        hit.weight,
-                    }),
-                  ),
-              };
+                        weight:
+                          hit.weight,
+                      }),
+                    ),
+                };
+              },
+            );
+
+          return findProjectTempos(
+            parsedScenes,
+
+            {
+              minBpm:
+                projectMinBpm,
+
+              maxBpm:
+                projectMaxBpm,
+
+              step:
+                projectStep,
+
+              fps,
+
+              tempoInfluence,
             },
+
+            3,
           );
+        } catch {
+          return [];
+        }
+      },
 
-        return findProjectTempos(
-          parsedScenes,
-
-          {
-            minBpm:
-              projectMinBpm,
-
-            maxBpm:
-              projectMaxBpm,
-
-            step:
-              projectStep,
-
-            fps,
-          },
-
-          3,
-        );
-      } catch {
-        return [];
-      }
-    }, [
-      mode,
-      scenes,
-      fps,
-      hasIncompleteScenes,
-      projectMinBpm,
-      projectMaxBpm,
-      projectStep,
-    ]);
+      [
+        mode,
+        scenes,
+        fps,
+        hasIncompleteScenes,
+        projectMinBpm,
+        projectMaxBpm,
+        projectStep,
+        tempoInfluence,
+      ],
+    );
 
   return (
     <main className="app">
@@ -900,9 +1002,10 @@ function App() {
             </strong>
 
             <span>
-              Find one BPM that
-              fits multiple
-              scenes.
+              Find a common
+              project BPM using
+              scene tempos and
+              picture timing.
             </span>
           </button>
         </div>
@@ -1288,19 +1391,15 @@ function App() {
                   <thead>
                     <tr>
                       <th>#</th>
-
                       <th>
                         Timecode
                       </th>
-
                       <th>
                         Alignment
                       </th>
-
                       <th>
                         Priority
                       </th>
-
                       <th>
                         Action
                       </th>
@@ -1350,7 +1449,6 @@ function App() {
                                 <input
                                   type="text"
                                   inputMode="numeric"
-                                  autoComplete="off"
                                   maxLength={
                                     11
                                   }
@@ -1367,6 +1465,7 @@ function App() {
                                   onChange={event =>
                                     updateCueHit(
                                       hit.id,
+
                                       {
                                         timecode:
                                           formatTimecodeInput(
@@ -1380,6 +1479,7 @@ function App() {
                                   onBlur={() =>
                                     updateCueHit(
                                       hit.id,
+
                                       {
                                         timecode:
                                           normalizeTimecode(
@@ -1401,9 +1501,8 @@ function App() {
                                 {!error &&
                                   beforeStart && (
                                     <span className="field-error">
-                                      Hit must
-                                      occur at
-                                      or after
+                                      Hit must occur
+                                      at or after
                                       Cue Start.
                                     </span>
                                   )}
@@ -1418,6 +1517,7 @@ function App() {
                                 onChange={event =>
                                   updateCueHit(
                                     hit.id,
+
                                     {
                                       snap:
                                         event
@@ -1451,6 +1551,7 @@ function App() {
                                 onChange={event =>
                                   updateCueHit(
                                     hit.id,
+
                                     {
                                       weight:
                                         Number(
@@ -1462,21 +1563,15 @@ function App() {
                                   )
                                 }
                               >
-                                <option
-                                  value={1}
-                                >
+                                <option value={1}>
                                   Normal
                                 </option>
 
-                                <option
-                                  value={2}
-                                >
+                                <option value={2}>
                                   Important
                                 </option>
 
-                                <option
-                                  value={4}
-                                >
+                                <option value={4}>
                                   Critical
                                 </option>
                               </select>
@@ -1573,12 +1668,14 @@ function App() {
             </h2>
 
             <p>
-              Choose the BPM
-              range to test
-              across all scenes.
+              Search for a common
+              BPM using both
+              picture alignment
+              and each scene's
+              preferred tempo.
             </p>
 
-            <div className="project-settings-grid">
+            <div className="project-settings-grid project-settings-grid--wide">
               <label>
                 <span className="field-label">
                   <Tooltip text="Frames Per Second">
@@ -1691,6 +1788,33 @@ function App() {
                   }
                 />
               </label>
+
+              <label>
+                <span className="field-label">
+                  <Tooltip text="How strongly each scene's preferred BPM influences the final project tempo. 0 means timing only, 1 is balanced, and higher values favor the entered scene tempos more strongly.">
+                    Tempo Influence
+                  </Tooltip>
+                </span>
+
+                <input
+                  type="number"
+                  min={0}
+                  step={0.1}
+                  value={
+                    tempoInfluence
+                  }
+                  onChange={
+                    event =>
+                      setTempoInfluence(
+                        Number(
+                          event
+                            .target
+                            .value,
+                        ),
+                      )
+                  }
+                />
+              </label>
             </div>
           </section>
 
@@ -1702,10 +1826,10 @@ function App() {
                 </h2>
 
                 <p>
-                  Define the
-                  scenes that
-                  should share one
-                  project tempo.
+                  Each scene has
+                  its own preferred
+                  tempo and timing
+                  constraints.
                 </p>
               </div>
 
@@ -1727,8 +1851,10 @@ function App() {
                 </p>
 
                 <p>
-                  Add at least one
-                  scene.
+                  Add scenes with
+                  their preferred
+                  tempo and picture
+                  range.
                 </p>
               </div>
             ) : (
@@ -1803,7 +1929,7 @@ function App() {
                           </button>
                         </div>
 
-                        <div className="scene-settings-grid">
+                        <div className="scene-settings-grid scene-settings-grid--with-tempo">
                           <label>
                             <span className="field-label">
                               Scene In
@@ -1914,6 +2040,37 @@ function App() {
                                   </span>
                                 )}
                             </div>
+                          </label>
+
+                          <label>
+                            <span className="field-label">
+                              Preferred{' '}
+                              <Tooltip text="The original or desired tempo for this scene.">
+                                BPM
+                              </Tooltip>
+                            </span>
+
+                            <input
+                              type="number"
+                              min={1}
+                              step={0.1}
+                              value={
+                                scene.preferredBpm
+                              }
+                              onChange={event =>
+                                updateScene(
+                                  scene.id,
+
+                                  'preferredBpm',
+
+                                  Number(
+                                    event
+                                      .target
+                                      .value,
+                                  ),
+                                )
+                              }
+                            />
                           </label>
 
                           <label>
@@ -2049,8 +2206,9 @@ function App() {
 
                             <p>
                               Optional
-                              events inside
-                              this scene.
+                              picture events
+                              inside this
+                              scene.
                             </p>
                           </div>
 
@@ -2083,16 +2241,13 @@ function App() {
                                 const hitError =
                                   getTimecodeError(
                                     hit.timecode,
-
                                     fps,
                                   );
 
                                 const rangeHitError =
                                   getHitRangeError(
                                     scene,
-
                                     hit.timecode,
-
                                     fps,
                                   );
 
@@ -2279,11 +2434,11 @@ function App() {
                 </h2>
 
                 <p>
-                  Find one common
-                  BPM with the best
-                  overall fit
-                  across all
-                  scenes.
+                  Ranking considers
+                  both picture
+                  alignment and the
+                  preferred tempo
+                  of every scene.
                 </p>
               </div>
             </div>
@@ -2355,6 +2510,87 @@ function App() {
         <div className="help-grid">
           <article className="help-item">
             <h3>
+              Preferred BPM
+            </h3>
+
+            <strong>
+              Scene Tempo
+            </strong>
+
+            <p>
+              The tempo you
+              originally want or
+              expect for a scene.
+              Project Tempo uses
+              this together with
+              timing alignment
+              when ranking common
+              BPM candidates.
+            </p>
+          </article>
+
+          <article className="help-item">
+            <h3>
+              Tempo Relationship
+            </h3>
+
+            <strong>
+              Rhythmic Relation
+            </strong>
+
+            <p>
+              A project tempo may
+              match a scene tempo
+              directly or through
+              half-time or
+              double-time
+              relationships.
+            </p>
+          </article>
+
+          <article className="help-item">
+            <h3>
+              Tempo Influence
+            </h3>
+
+            <strong>
+              Project Search
+              Balance
+            </strong>
+
+            <p>
+              Controls how much
+              scene tempo
+              preferences affect
+              Project Tempo.
+              0 uses picture
+              timing only, 1 is
+              balanced, and larger
+              values favor scene
+              tempos more strongly.
+            </p>
+          </article>
+
+          <article className="help-item">
+            <h3>
+              Project Score
+            </h3>
+
+            <strong>
+              Combined Ranking
+            </strong>
+
+            <p>
+              Combines timing
+              alignment and tempo
+              compatibility.
+              Lower values are
+              better.
+            </p>
+          </article>
+
+          <article className="help-item">
+            <h3>
               Find Tempo
             </h3>
 
@@ -2363,11 +2599,10 @@ function App() {
             </strong>
 
             <p>
-              Use hit points from
-              one cue to find the
-              BPMs whose musical
-              grid fits those
-              events best.
+              Finds BPMs whose
+              musical grid best
+              fits hit points
+              inside a single cue.
             </p>
           </article>
 
@@ -2381,123 +2616,12 @@ function App() {
             </strong>
 
             <p>
-              Finds one common
-              BPM that can work
-              across several
-              scenes. Each scene
-              may have its own
-              cue/grid placement.
-            </p>
-          </article>
-
-          <article className="help-item">
-            <h3>
-              Cue Start
-            </h3>
-
-            <strong>
-              Musical Grid Origin
-            </strong>
-
-            <p>
-              In Find Tempo mode,
-              this is the exact
-              picture timecode
-              assigned to the
-              selected starting
-              Bar and Beat.
-            </p>
-          </article>
-
-          <article className="help-item">
-            <h3>
-              Recommended Cue
-              Start
-            </h3>
-
-            <strong>
-              Project Scene
-              Placement
-            </strong>
-
-            <p>
-              In Project Tempo
-              mode, every scene
-              gets its own
-              recommended musical
-              grid origin while
-              sharing the same
-              BPM.
-            </p>
-          </article>
-
-          <article className="help-item">
-            <h3>
-              Bar / Beat
-            </h3>
-
-            <strong>
-              Musical Position
-            </strong>
-
-            <p>
-              For example 12 / 3
-              means Bar 12,
-              Beat 3.
-            </p>
-          </article>
-
-          <article className="help-item">
-            <h3>
-              Timing Error
-            </h3>
-
-            <strong>
-              Distance from Grid
-            </strong>
-
-            <p>
-              The timing
-              difference between
-              a picture event and
-              the musical
-              position it was
-              matched to.
-            </p>
-          </article>
-
-          <article className="help-item">
-            <h3>
-              Priority
-            </h3>
-
-            <strong>
-              Search Weight
-            </strong>
-
-            <p>
-              Important and
-              Critical events or
-              scenes have more
-              influence on the
-              final ranking.
-            </p>
-          </article>
-
-          <article className="help-item">
-            <h3>
-              Overall Error
-            </h3>
-
-            <strong>
-              Combined Fit
-            </strong>
-
-            <p>
-              Lower values mean
-              the tempo fits the
-              selected events
-              more closely.
+              Finds a common BPM
+              across multiple
+              scenes while
+              considering each
+              scene's own
+              preferred tempo.
             </p>
           </article>
         </div>
@@ -2507,7 +2631,7 @@ function App() {
 }
 
 /*
- * Single Cue Results
+ * Find Tempo Results
  */
 
 type SingleCueResultsTableProps = {
@@ -2557,21 +2681,15 @@ function SingleCueResultsTable({
                   }
                 >
                   <th>
-                    <Tooltip text="Continuous beat position from the selected musical start">
-                      Beat #
-                    </Tooltip>
+                    Beat #
                   </th>
 
                   <th>
-                    <Tooltip text="Bar number and beat inside that bar">
-                      Bar / Beat
-                    </Tooltip>
+                    Bar / Beat
                   </th>
 
                   <th>
-                    <Tooltip text="Difference between the picture event and the matched musical position">
-                      Timing Error
-                    </Tooltip>
+                    Timing Error
                   </th>
                 </Fragment>
               ),
@@ -2599,7 +2717,6 @@ function SingleCueResultsTable({
                       key={`${result.bpm}-${hit.id}`}
                       alignment={getAlignment(
                         result,
-
                         hit.id,
                       )}
                     />
@@ -2629,21 +2746,18 @@ function SingleCueResultsTable({
                       {result.bpm.toFixed(
                         1,
                       )}{' '}
-
                       BPM
                     </strong>
 
                     <span>
                       Overall
                       Error:{' '}
-
                       {(
                         result.rmse *
                         1000
                       ).toFixed(
                         2,
                       )}{' '}
-
                       ms
                     </span>
                   </div>
@@ -2717,7 +2831,8 @@ function getAlignment(
   result:
     TempoResult,
 
-  hitId: string,
+  hitId:
+    string,
 ) {
   return result.alignments.find(
     alignment =>
@@ -2727,11 +2842,12 @@ function getAlignment(
 }
 
 /*
- * Project Result
+ * Project Results
  */
 
 type ProjectTempoCardProps = {
-  rank: number;
+  rank:
+    number;
 
   result:
     ProjectTempoResult;
@@ -2739,7 +2855,8 @@ type ProjectTempoCardProps = {
   scenes:
     SceneInput[];
 
-  fps: number;
+  fps:
+    number;
 };
 
 function ProjectTempoCard({
@@ -2760,7 +2877,6 @@ function ProjectTempoCard({
             {result.bpm.toFixed(
               1,
             )}{' '}
-
             BPM
           </strong>
         </div>
@@ -2768,18 +2884,42 @@ function ProjectTempoCard({
         <div className="result-metrics">
           <div>
             <span>
-              Overall Error
+              Project Score
+            </span>
+
+            <strong>
+              {result.score.toFixed(
+                4,
+              )}
+            </strong>
+          </div>
+
+          <div>
+            <span>
+              Timing Error
             </span>
 
             <strong>
               {(
-                result.rmse *
+                result.timingRmse *
                 1000
               ).toFixed(
                 2,
               )}{' '}
-
               ms
+            </strong>
+          </div>
+
+          <div>
+            <span>
+              Tempo Deviation
+            </span>
+
+            <strong>
+              {result.tempoDeviationPercent.toFixed(
+                2,
+              )}
+              %
             </strong>
           </div>
 
@@ -2795,14 +2935,13 @@ function ProjectTempoCard({
               ).toFixed(
                 2,
               )}{' '}
-
               ms
             </strong>
           </div>
 
           <div>
             <span>
-              Fit
+              Timing Fit
             </span>
 
             <strong>
@@ -2815,11 +2954,23 @@ function ProjectTempoCard({
       </div>
 
       <div className="tempo-scenes-table-wrapper">
-        <table className="tempo-scenes-table">
+        <table className="tempo-scenes-table tempo-scenes-table--extended">
           <thead>
             <tr>
               <th>
                 Scene
+              </th>
+
+              <th>
+                Preferred Tempo
+              </th>
+
+              <th>
+                Relationship
+              </th>
+
+              <th>
+                Tempo Deviation
               </th>
 
               <th>
@@ -2836,7 +2987,7 @@ function ProjectTempoCard({
               </th>
 
               <th>
-                Scene Error
+                Timing Error
               </th>
 
               <th>
@@ -2866,10 +3017,29 @@ function ProjectTempoCard({
                         'Scene'}
                     </td>
 
+                    <td>
+                      {sceneFit.preferredBpm.toFixed(
+                        1,
+                      )}{' '}
+                      BPM
+                    </td>
+
+                    <td>
+                      {formatTempoRelationship(
+                        sceneFit.tempoRelationship,
+                      )}
+                    </td>
+
+                    <td>
+                      {sceneFit.tempoDeviationPercent.toFixed(
+                        2,
+                      )}
+                      %
+                    </td>
+
                     <td className="timecode-cell">
                       {secondsToTimecode(
                         sceneFit.recommendedCueStart,
-
                         fps,
                       )}
                     </td>
@@ -2901,7 +3071,6 @@ function ProjectTempoCard({
                       ).toFixed(
                         2,
                       )}{' '}
-
                       ms
                     </td>
 
@@ -2919,6 +3088,31 @@ function ProjectTempoCard({
       </div>
     </article>
   );
+}
+
+function formatTempoRelationship(
+  relationship:
+    TempoRelationship,
+): string {
+  switch (relationship) {
+    case 'quarter-time':
+      return '¼×';
+
+    case 'half-time':
+      return '½×';
+
+    case 'same':
+      return '1×';
+
+    case 'double-time':
+      return '2×';
+
+    case 'quadruple-time':
+      return '4×';
+
+    case 'related':
+      return 'Related';
+  }
 }
 
 function formatQuality(
@@ -2941,7 +3135,8 @@ function formatQuality(
 }
 
 function formatMilliseconds(
-  milliseconds: number,
+  milliseconds:
+    number,
 ): string {
   const prefix =
     milliseconds >= 0
@@ -2953,14 +3148,12 @@ function formatMilliseconds(
   )} ms`;
 }
 
-/*
- * Project validations
- */
-
 function getSceneRangeError(
-  scene: SceneInput,
+  scene:
+    SceneInput,
 
-  fps: number,
+  fps:
+    number,
 ): string | null {
   if (
     !isValidTimecode(
@@ -2997,11 +3190,14 @@ function getSceneRangeError(
 }
 
 function getHitRangeError(
-  scene: SceneInput,
+  scene:
+    SceneInput,
 
-  timecode: string,
+  timecode:
+    string,
 
-  fps: number,
+  fps:
+    number,
 ): string | null {
   if (
     !isValidTimecode(

@@ -73,7 +73,7 @@ export type HitAlignment = {
 };
 
 /*
- * Single Cue / Find Tempo
+ * Find Tempo
  */
 
 export type TempoSearchOptions =
@@ -83,11 +83,6 @@ export type TempoSearchOptions =
     maxBpm: number;
 
     step: number;
-  };
-
-export type FixedTempoOptions =
-  MusicalGridOptions & {
-    bpm: number;
   };
 
 export type TempoResult = {
@@ -113,6 +108,12 @@ export type SceneTempoInput = {
 
   endTime: number;
 
+  /**
+   * Tempo originally preferred
+   * for this scene.
+   */
+  preferredBpm: number;
+
   weight: SceneWeight;
 
   beatsPerBar: number;
@@ -122,10 +123,45 @@ export type SceneTempoInput = {
   hitPoints: HitPoint[];
 };
 
+export type TempoRelationship =
+  | 'quarter-time'
+  | 'half-time'
+  | 'same'
+  | 'double-time'
+  | 'quadruple-time'
+  | 'related';
+
 export type SceneTempoFit = {
   sceneId: string;
 
+  /**
+   * Candidate project BPM.
+   */
   bpm: number;
+
+  /**
+   * Original / preferred BPM
+   * entered for this scene.
+   */
+  preferredBpm: number;
+
+  /**
+   * Closest rhythmically equivalent
+   * version of preferredBpm.
+   */
+  matchedTempo: number;
+
+  tempoRelationship:
+    TempoRelationship;
+
+  /**
+   * Percentage distance between the
+   * candidate project BPM and the
+   * nearest equivalent scene tempo.
+   *
+   * 0 = exact rhythmic relationship.
+   */
+  tempoDeviationPercent: number;
 
   recommendedCueStart: number;
 
@@ -152,14 +188,40 @@ export type ProjectTempoSearchOptions = {
   step: number;
 
   fps: number;
+
+  /**
+   * Controls how strongly scene tempo
+   * preferences influence the final
+   * ranking.
+   *
+   * 0 = timing only.
+   * 1 = balanced.
+   * > 1 = stronger tempo preference.
+   */
+  tempoInfluence: number;
 };
 
 export type ProjectTempoResult = {
   bpm: number;
 
-  rmse: number;
+  /**
+   * Final normalized score.
+   * Lower is better.
+   */
+  score: number;
+
+  /**
+   * Timing-only weighted RMSE.
+   */
+  timingRmse: number;
 
   maxError: number;
+
+  /**
+   * Weighted average tempo deviation
+   * across all scenes.
+   */
+  tempoDeviationPercent: number;
 
   quality: TempoQuality;
 
